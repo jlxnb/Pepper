@@ -1,7 +1,7 @@
 plugins {
     java
     `maven-publish`
-    id("io.papermc.paperweight.patcher") version "1.7.4-SNAPSHOT"
+    id("io.papermc.paperweight.patcher") version "1.7.3"
 }
 
 val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
@@ -11,6 +11,7 @@ repositories {
     mavenCentral()
     maven(paperMavenPublicUrl) {
         content { onlyForConfigurations(configurations.paperclip.name) }
+
     }
     maven(leafMavenPublicUrl) // Quantumleaper
 }

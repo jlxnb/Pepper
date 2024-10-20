@@ -1,262 +1,274 @@
 Subject: [PATCH] v0.1 - Change brands & modified plugins command output
 ---
-Index: patches/server/PepperPatch-0001.patch
-===================================================================
-diff --git a/patches/server/PepperPatch-0001.patch b/patches/server/PepperPatch-0001.patch
-deleted file mode 100644
---- a/patches/server/PepperPatch-0001.patch	(revision 484e08e96ed0aa475865817d798f0826e718a45f)
-+++ /dev/null	(revision 484e08e96ed0aa475865817d798f0826e718a45f)
-@@ -1,200 +0,0 @@
--Subject: [PATCH] v0.1 - Change brands & modified plugins command output
-----
--Index: Leaf-Server/build.gradle.kts
--IDEA additional info:
--Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
--<+>UTF-8
--===================================================================
--diff --git a/Leaf-Server/build.gradle.kts b/Leaf-Server/build.gradle.kts
----- a/Leaf-Server/build.gradle.kts	(revision cf0d82d130500bb251234db585fb6ba820158336)
--+++ b/Leaf-Server/build.gradle.kts	(date 1729262445841)
--@@ -122,14 +122,14 @@
--         val gitBranch = git("rev-parse", "--abbrev-ref", "HEAD").getText().trim() // Paper
--         attributes(
--             "Main-Class" to "org.bukkit.craftbukkit.Main",
---            "Implementation-Title" to "Leaf", // Gale - branding changes // Leaf
--+            "Implementation-Title" to "Pepper", // Gale - branding changes // Leaf
--             "Implementation-Version" to implementationVersion,
--             "Implementation-Vendor" to date, // Paper
---            "Specification-Title" to "Leaf", // Gale - branding changes // Leaf
--+            "Specification-Title" to "Pepper", // Gale - branding changes // Leaf
--             "Specification-Version" to project.version,
---            "Specification-Vendor" to "Winds Studio", // Gale - branding changes // Leaf
--+            "Specification-Vendor" to "Pepper Studio", // Gale - branding changes // Leaf
--             "Brand-Id" to "winds-studio:leaf", // Gale - branding changes // Leaf
---            "Brand-Name" to "Leaf", // Gale - branding changes // Leaf
--+            "Brand-Name" to "Pepper", // Gale - branding changes // Leaf
--             "Build-Number" to (build ?: ""),
--             "Build-Time" to Instant.now().toString(),
--             "Git-Branch" to gitBranch, // Paper
--Index: Leaf-Server/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
--IDEA additional info:
--Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
--<+>UTF-8
--===================================================================
--diff --git a/Leaf-Server/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java b/Leaf-Server/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
----- a/Leaf-Server/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java	(revision cf0d82d130500bb251234db585fb6ba820158336)
--+++ b/Leaf-Server/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java	(date 1729262553454)
--@@ -69,7 +69,8 @@
--                 || brandId.equals(BRAND_PAPER_ID)
--                 || brandId.equals(BRAND_GALE_ID) // Gale - branding changes // Leaf
--                 || brandId.equals(BRAND_PUFFERFISH_ID) // Leaf
---                || brandId.equals(BRAND_PURPUR_ID); // Leaf
--+                || brandId.equals(BRAND_PURPUR_ID) // Leaf
--+                || brandId.equals(BRAND_PEPPER_ID);//Pepper
--     }
-- 
--     @Override
--Index: Leaf-Server/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java
--IDEA additional info:
--Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
--<+>UTF-8
--===================================================================
--diff --git a/Leaf-Server/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java b/Leaf-Server/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java
----- a/Leaf-Server/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java	(revision cf0d82d130500bb251234db585fb6ba820158336)
--+++ b/Leaf-Server/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java	(date 1729265614354)
--@@ -63,8 +63,9 @@
-- 
--     private static final Component LEGACY_PLUGIN_STAR = Component.text('*', TextColor.color(255, 212, 42)).hoverEvent(LEGACY_PLUGIN_INFO);
--     private static final Component INFO_ICON_START = Component.text("ℹ ", INFO_COLOR);
---    private static final Component PAPER_HEADER = Component.text("Paper Plugins:", TextColor.color(2, 136, 209));
---    private static final Component BUKKIT_HEADER = Component.text("Bukkit Plugins:", TextColor.color(237, 129, 6));
--+    private static final Component PLUGINS_HEADER = Component.text("Plugins", TextColor.color(2, 136, 209));
--+//    private static final Component PAPER_HEADER = Component.text("Paper Plugins:", TextColor.color(2, 136, 209));
--+//    private static final Component BUKKIT_HEADER = Component.text("Bukkit Plugins:", TextColor.color(237, 129, 6));
--     private static final Component PLUGIN_TICK = Component.text("- ", NamedTextColor.DARK_GRAY);
--     private static final Component PLUGIN_TICK_EMPTY = Component.text(" ");
-- 
--@@ -95,13 +96,13 @@
--          */
--         for (List<Component> componentSublist : Lists.partition(components, 10)) {
--             Component component = Component.space();
---            if (isFirst) {
---                component = component.append(PLUGIN_TICK);
---                isFirst = false;
---            } else {
---                component = PLUGIN_TICK_EMPTY;
--+//            if (isFirst) {
--+//                component = component.append(PLUGIN_TICK);
--+//                isFirst = false;
--+//            } else {
--+            component = PLUGIN_TICK_EMPTY;
--                 //formattedSublists.add(Component.empty()); // Add an empty line, the auto chat wrapping and this makes it quite jarring.
---            }
--+//            }
-- 
--             formattedSublists.add(component.append(Component.join(JoinConfiguration.commas(true), componentSublist)));
--         }
--@@ -187,6 +188,7 @@
--     }
-- 
--     private static TextColor fromStatus(PluginProvider<?> provider) {
--+        TextColor succeedColor=(provider instanceof PaperPluginParent.PaperServerPluginProvider) ? TextColor.color(2, 180, 255) : NamedTextColor.GREEN;
--         if (provider instanceof ProviderStatusHolder statusHolder && statusHolder.getLastProvidedStatus() != null) {
--             ProviderStatus status = statusHolder.getLastProvidedStatus();
-- 
--@@ -198,11 +200,11 @@
--                     return NamedTextColor.RED;
--                 }
-- 
---                return plugin.isEnabled() ? NamedTextColor.GREEN : NamedTextColor.RED;
--+                return plugin.isEnabled() ? succeedColor : NamedTextColor.RED;
--             }
-- 
--             return switch (status) {
---                case INITIALIZED -> NamedTextColor.GREEN;
--+                case INITIALIZED -> succeedColor;
--                 case ERRORED -> NamedTextColor.RED;
--             };
--         } else if (provider instanceof PaperPluginParent.PaperServerPluginProvider serverPluginProvider && serverPluginProvider.shouldSkipCreation()) {
--@@ -220,38 +222,44 @@
--     public boolean execute(@NotNull CommandSender sender, @NotNull String currentAlias, @NotNull String[] args) {
--         if (!this.testPermission(sender)) return true;
-- 
---        TreeMap<String, PluginProvider<JavaPlugin>> paperPlugins = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
---        TreeMap<String, PluginProvider<JavaPlugin>> spigotPlugins = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
---
--+//        TreeMap<String, PluginProvider<JavaPlugin>> paperPlugins = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
--+//        TreeMap<String, PluginProvider<JavaPlugin>> spigotPlugins = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
--+        TreeMap<String, PluginProvider<JavaPlugin>> totalPlugins = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-- 
--         for (PluginProvider<JavaPlugin> provider : LaunchEntryPointHandler.INSTANCE.get(Entrypoint.PLUGIN).getRegisteredProviders()) {
--             PluginMeta configuration = provider.getMeta();
---
---            if (provider instanceof SpigotPluginProvider) {
---                spigotPlugins.put(configuration.getDisplayName(), provider);
---            } else if (provider instanceof PaperPluginParent.PaperServerPluginProvider) {
---                paperPlugins.put(configuration.getDisplayName(), provider);
---            }
--+            totalPlugins.put(configuration.getDisplayName(), provider);
--+//            if (provider instanceof SpigotPluginProvider) {
--+//                spigotPlugins.put(configuration.getDisplayName(), provider);
--+//            } else if (provider instanceof PaperPluginParent.PaperServerPluginProvider) {
--+//                paperPlugins.put(configuration.getDisplayName(), provider);
--+//            }
--         }
-- 
---        //Component infoMessage = Component.text("Server Plugins (%s):".formatted(paperPlugins.size() + spigotPlugins.size()), NamedTextColor.WHITE);
---            //.append(INFO_ICON_START.hoverEvent(SERVER_PLUGIN_INFO)); TODO: Add docs
---
---        //sender.sendMessage(infoMessage); // Purpur
---
---        //if (!paperPlugins.isEmpty()) { // Purpur
---            sender.sendMessage(PAPER_HEADER.append(Component.text(" (%s):".formatted(paperPlugins.size())))); // Purpur
---        //} // Purpur
--+//        Component infoMessage = Component.text("Server Plugins (%s):".formatted(paperPlugins.size() + spigotPlugins.size()), NamedTextColor.WHITE);
--+//            .append(INFO_ICON_START.hoverEvent(SERVER_PLUGIN_INFO)); TODO: Add docs
--+//
--+//        sender.sendMessage(infoMessage); // Purpur
--+//
--+//        if (!paperPlugins.isEmpty()) { // Purpur
--+//            sender.sendMessage(PAPER_HEADER.append(Component.text(" (%s):".formatted(paperPlugins.size())))); // Purpur
--+//        } // Purpur
-- 
---        for (Component component : formatProviders(paperPlugins, sender)) { // Purpur
---            sender.sendMessage(component);
---        }
--+//        for (Component component : formatProviders(paperPlugins, sender)) { // Purpur
--+//            sender.sendMessage(component);
--+//        }
-- 
---        //if (!spigotPlugins.isEmpty()) { // Purpur
---            sender.sendMessage(BUKKIT_HEADER.append(Component.text(" (%s):".formatted(spigotPlugins.size())))); // Purpur
---        //} // Purpur
--+//        if (!spigotPlugins.isEmpty()) { // Purpur
--+//            sender.sendMessage(BUKKIT_HEADER.append(Component.text(" (%s):".formatted(spigotPlugins.size())))); // Purpur
--+//        } // Purpur
--         
---        for (Component component : formatProviders(spigotPlugins, sender)) { // Purpur
--+//        for (Component component : formatProviders(spigotPlugins, sender)) { // Purpur
--+//            sender.sendMessage(component);
--+//        }
--+
--+        sender.sendMessage(PLUGINS_HEADER.append(Component.text(" (%s):".formatted(totalPlugins.size()))));
--+
--+        for(Component component : formatProviders(totalPlugins, sender)) {
--             sender.sendMessage(component);
--         }
-- 
--Index: Leaf-API/src/main/java/io/papermc/paper/ServerBuildInfo.java
--IDEA additional info:
--Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
--<+>UTF-8
--===================================================================
--diff --git a/Leaf-API/src/main/java/io/papermc/paper/ServerBuildInfo.java b/Leaf-API/src/main/java/io/papermc/paper/ServerBuildInfo.java
----- a/Leaf-API/src/main/java/io/papermc/paper/ServerBuildInfo.java	(revision cd753026ff4a825a17fe94edd0b2c77a98533bd5)
--+++ b/Leaf-API/src/main/java/io/papermc/paper/ServerBuildInfo.java	(date 1729262549164)
--@@ -26,6 +26,13 @@
--     Key BRAND_GALE_ID = Key.key("galemc", "gale");
--     // Gale end - branding changes
-- 
--+    // Pepper start
--+    /**
--+     * The brand id for Pepper
--+     */
--+    Key BRAND_PEPPER_ID = Key.key("peppermc", "pepper");
--+    // Pepper end
--+
--     // Purpur start
--     /**
--      * The brand id for Pufferfish.
-Index: Leaf-Server/src/main/java/org/bukkit/craftbukkit/Main.java
+Index: patches/server/v0_1_-_Change_brands_&_modified_plugins_command_output.patch
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
-diff --git a/Leaf-Server/src/main/java/org/bukkit/craftbukkit/Main.java b/Leaf-Server/src/main/java/org/bukkit/craftbukkit/Main.java
---- a/Leaf-Server/src/main/java/org/bukkit/craftbukkit/Main.java	(revision c0245053445ae41f8d6040301777b9e51c16d504)
-+++ b/Leaf-Server/src/main/java/org/bukkit/craftbukkit/Main.java	(date 1729429744088)
-@@ -41,7 +41,7 @@
-                 this.acceptsAll(Main.asList("c", "config"), "Properties file to use")
-                         .withRequiredArg()
-                         .ofType(File.class)
--                        .defaultsTo(new File("server.properties"))
-+                        .defaultsTo(new File("./config/server.properties"))
-                         .describedAs("Properties file");
- 
-                 this.acceptsAll(Main.asList("P", "plugins"), "Plugin directory to use")
-@@ -58,7 +58,7 @@
-                 this.acceptsAll(Main.asList("W", "world-dir", "universe", "world-container"), "World container")
-                         .withRequiredArg()
-                         .ofType(File.class)
--                        .defaultsTo(new File("."))
-+                        .defaultsTo(new File("./Worlds"))
-                         .describedAs("Directory containing worlds");
- 
-                 this.acceptsAll(Main.asList("w", "world", "level-name"), "World name")
-@@ -124,7 +124,7 @@
-                 this.acceptsAll(Main.asList("b", "bukkit-settings"), "File for bukkit settings")
-                         .withRequiredArg()
-                         .ofType(File.class)
--                        .defaultsTo(new File("bukkit.yml"))
-+                        .defaultsTo(new File("./config/bukkit.yml"))
-                         .describedAs("Yml file");
- 
-                 this.acceptsAll(Main.asList("C", "commands-settings"), "File for command settings")
-@@ -153,7 +153,7 @@
-                 this.acceptsAll(Main.asList("S", "spigot-settings"), "File for spigot settings")
-                         .withRequiredArg()
-                         .ofType(File.class)
--                        .defaultsTo(new File("spigot.yml"))
-+                        .defaultsTo(new File("./config/spigot.yml"))
-                         .describedAs("Yml file");
-                 // Spigot End
- 
-@@ -180,7 +180,7 @@
-                 acceptsAll(asList("purpur", "purpur-settings"), "File for purpur settings")
-                     .withRequiredArg()
-                     .ofType(File.class)
--                    .defaultsTo(new File("purpur.yml"))
-+                    .defaultsTo(new File("./config/purpur.yml"))
-                     .describedAs("Yml file");
-                 // Purpur end
- 
+diff --git a/patches/server/v0_1_-_Change_brands_&_modified_plugins_command_output.patch b/patches/server/v0_1_-_Change_brands_&_modified_plugins_command_output.patch
+deleted file mode 100644
+--- a/patches/server/v0_1_-_Change_brands_&_modified_plugins_command_output.patch	(revision 963cf9ac61e51f561cbb2ee1b8aca4d3f8b8a99b)
++++ /dev/null	(revision 963cf9ac61e51f561cbb2ee1b8aca4d3f8b8a99b)
+@@ -1,262 +0,0 @@
+-Subject: [PATCH] v0.1 - Change brands & modified plugins command output
+----
+-Index: patches/server/PepperPatch-0001.patch
+-===================================================================
+-diff --git a/patches/server/PepperPatch-0001.patch b/patches/server/PepperPatch-0001.patch
+-deleted file mode 100644
+---- a/patches/server/PepperPatch-0001.patch	(revision 484e08e96ed0aa475865817d798f0826e718a45f)
+-+++ /dev/null	(revision 484e08e96ed0aa475865817d798f0826e718a45f)
+-@@ -1,200 +0,0 @@
+--Subject: [PATCH] v0.1 - Change brands & modified plugins command output
+-----
+--Index: Leaf-Server/build.gradle.kts
+--IDEA additional info:
+--Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+--<+>UTF-8
+--===================================================================
+--diff --git a/Leaf-Server/build.gradle.kts b/Leaf-Server/build.gradle.kts
+----- a/Leaf-Server/build.gradle.kts	(revision cf0d82d130500bb251234db585fb6ba820158336)
+--+++ b/Leaf-Server/build.gradle.kts	(date 1729262445841)
+--@@ -122,14 +122,14 @@
+--         val gitBranch = git("rev-parse", "--abbrev-ref", "HEAD").getText().trim() // Paper
+--         attributes(
+--             "Main-Class" to "org.bukkit.craftbukkit.Main",
+---            "Implementation-Title" to "Leaf", // Gale - branding changes // Leaf
+--+            "Implementation-Title" to "Pepper", // Gale - branding changes // Leaf
+--             "Implementation-Version" to implementationVersion,
+--             "Implementation-Vendor" to date, // Paper
+---            "Specification-Title" to "Leaf", // Gale - branding changes // Leaf
+--+            "Specification-Title" to "Pepper", // Gale - branding changes // Leaf
+--             "Specification-Version" to project.version,
+---            "Specification-Vendor" to "Winds Studio", // Gale - branding changes // Leaf
+--+            "Specification-Vendor" to "Pepper Studio", // Gale - branding changes // Leaf
+--             "Brand-Id" to "winds-studio:leaf", // Gale - branding changes // Leaf
+---            "Brand-Name" to "Leaf", // Gale - branding changes // Leaf
+--+            "Brand-Name" to "Pepper", // Gale - branding changes // Leaf
+--             "Build-Number" to (build ?: ""),
+--             "Build-Time" to Instant.now().toString(),
+--             "Git-Branch" to gitBranch, // Paper
+--Index: Leaf-Server/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
+--IDEA additional info:
+--Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+--<+>UTF-8
+--===================================================================
+--diff --git a/Leaf-Server/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java b/Leaf-Server/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
+----- a/Leaf-Server/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java	(revision cf0d82d130500bb251234db585fb6ba820158336)
+--+++ b/Leaf-Server/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java	(date 1729262553454)
+--@@ -69,7 +69,8 @@
+--                 || brandId.equals(BRAND_PAPER_ID)
+--                 || brandId.equals(BRAND_GALE_ID) // Gale - branding changes // Leaf
+--                 || brandId.equals(BRAND_PUFFERFISH_ID) // Leaf
+---                || brandId.equals(BRAND_PURPUR_ID); // Leaf
+--+                || brandId.equals(BRAND_PURPUR_ID) // Leaf
+--+                || brandId.equals(BRAND_PEPPER_ID);//Pepper
+--     }
+-- 
+--     @Override
+--Index: Leaf-Server/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java
+--IDEA additional info:
+--Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+--<+>UTF-8
+--===================================================================
+--diff --git a/Leaf-Server/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java b/Leaf-Server/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java
+----- a/Leaf-Server/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java	(revision cf0d82d130500bb251234db585fb6ba820158336)
+--+++ b/Leaf-Server/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java	(date 1729265614354)
+--@@ -63,8 +63,9 @@
+-- 
+--     private static final Component LEGACY_PLUGIN_STAR = Component.text('*', TextColor.color(255, 212, 42)).hoverEvent(LEGACY_PLUGIN_INFO);
+--     private static final Component INFO_ICON_START = Component.text("ℹ ", INFO_COLOR);
+---    private static final Component PAPER_HEADER = Component.text("Paper Plugins:", TextColor.color(2, 136, 209));
+---    private static final Component BUKKIT_HEADER = Component.text("Bukkit Plugins:", TextColor.color(237, 129, 6));
+--+    private static final Component PLUGINS_HEADER = Component.text("Plugins", TextColor.color(2, 136, 209));
+--+//    private static final Component PAPER_HEADER = Component.text("Paper Plugins:", TextColor.color(2, 136, 209));
+--+//    private static final Component BUKKIT_HEADER = Component.text("Bukkit Plugins:", TextColor.color(237, 129, 6));
+--     private static final Component PLUGIN_TICK = Component.text("- ", NamedTextColor.DARK_GRAY);
+--     private static final Component PLUGIN_TICK_EMPTY = Component.text(" ");
+-- 
+--@@ -95,13 +96,13 @@
+--          */
+--         for (List<Component> componentSublist : Lists.partition(components, 10)) {
+--             Component component = Component.space();
+---            if (isFirst) {
+---                component = component.append(PLUGIN_TICK);
+---                isFirst = false;
+---            } else {
+---                component = PLUGIN_TICK_EMPTY;
+--+//            if (isFirst) {
+--+//                component = component.append(PLUGIN_TICK);
+--+//                isFirst = false;
+--+//            } else {
+--+            component = PLUGIN_TICK_EMPTY;
+--                 //formattedSublists.add(Component.empty()); // Add an empty line, the auto chat wrapping and this makes it quite jarring.
+---            }
+--+//            }
+-- 
+--             formattedSublists.add(component.append(Component.join(JoinConfiguration.commas(true), componentSublist)));
+--         }
+--@@ -187,6 +188,7 @@
+--     }
+-- 
+--     private static TextColor fromStatus(PluginProvider<?> provider) {
+--+        TextColor succeedColor=(provider instanceof PaperPluginParent.PaperServerPluginProvider) ? TextColor.color(2, 180, 255) : NamedTextColor.GREEN;
+--         if (provider instanceof ProviderStatusHolder statusHolder && statusHolder.getLastProvidedStatus() != null) {
+--             ProviderStatus status = statusHolder.getLastProvidedStatus();
+-- 
+--@@ -198,11 +200,11 @@
+--                     return NamedTextColor.RED;
+--                 }
+-- 
+---                return plugin.isEnabled() ? NamedTextColor.GREEN : NamedTextColor.RED;
+--+                return plugin.isEnabled() ? succeedColor : NamedTextColor.RED;
+--             }
+-- 
+--             return switch (status) {
+---                case INITIALIZED -> NamedTextColor.GREEN;
+--+                case INITIALIZED -> succeedColor;
+--                 case ERRORED -> NamedTextColor.RED;
+--             };
+--         } else if (provider instanceof PaperPluginParent.PaperServerPluginProvider serverPluginProvider && serverPluginProvider.shouldSkipCreation()) {
+--@@ -220,38 +222,44 @@
+--     public boolean execute(@NotNull CommandSender sender, @NotNull String currentAlias, @NotNull String[] args) {
+--         if (!this.testPermission(sender)) return true;
+-- 
+---        TreeMap<String, PluginProvider<JavaPlugin>> paperPlugins = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+---        TreeMap<String, PluginProvider<JavaPlugin>> spigotPlugins = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+---
+--+//        TreeMap<String, PluginProvider<JavaPlugin>> paperPlugins = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+--+//        TreeMap<String, PluginProvider<JavaPlugin>> spigotPlugins = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+--+        TreeMap<String, PluginProvider<JavaPlugin>> totalPlugins = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+-- 
+--         for (PluginProvider<JavaPlugin> provider : LaunchEntryPointHandler.INSTANCE.get(Entrypoint.PLUGIN).getRegisteredProviders()) {
+--             PluginMeta configuration = provider.getMeta();
+---
+---            if (provider instanceof SpigotPluginProvider) {
+---                spigotPlugins.put(configuration.getDisplayName(), provider);
+---            } else if (provider instanceof PaperPluginParent.PaperServerPluginProvider) {
+---                paperPlugins.put(configuration.getDisplayName(), provider);
+---            }
+--+            totalPlugins.put(configuration.getDisplayName(), provider);
+--+//            if (provider instanceof SpigotPluginProvider) {
+--+//                spigotPlugins.put(configuration.getDisplayName(), provider);
+--+//            } else if (provider instanceof PaperPluginParent.PaperServerPluginProvider) {
+--+//                paperPlugins.put(configuration.getDisplayName(), provider);
+--+//            }
+--         }
+-- 
+---        //Component infoMessage = Component.text("Server Plugins (%s):".formatted(paperPlugins.size() + spigotPlugins.size()), NamedTextColor.WHITE);
+---            //.append(INFO_ICON_START.hoverEvent(SERVER_PLUGIN_INFO)); TODO: Add docs
+---
+---        //sender.sendMessage(infoMessage); // Purpur
+---
+---        //if (!paperPlugins.isEmpty()) { // Purpur
+---            sender.sendMessage(PAPER_HEADER.append(Component.text(" (%s):".formatted(paperPlugins.size())))); // Purpur
+---        //} // Purpur
+--+//        Component infoMessage = Component.text("Server Plugins (%s):".formatted(paperPlugins.size() + spigotPlugins.size()), NamedTextColor.WHITE);
+--+//            .append(INFO_ICON_START.hoverEvent(SERVER_PLUGIN_INFO)); TODO: Add docs
+--+//
+--+//        sender.sendMessage(infoMessage); // Purpur
+--+//
+--+//        if (!paperPlugins.isEmpty()) { // Purpur
+--+//            sender.sendMessage(PAPER_HEADER.append(Component.text(" (%s):".formatted(paperPlugins.size())))); // Purpur
+--+//        } // Purpur
+-- 
+---        for (Component component : formatProviders(paperPlugins, sender)) { // Purpur
+---            sender.sendMessage(component);
+---        }
+--+//        for (Component component : formatProviders(paperPlugins, sender)) { // Purpur
+--+//            sender.sendMessage(component);
+--+//        }
+-- 
+---        //if (!spigotPlugins.isEmpty()) { // Purpur
+---            sender.sendMessage(BUKKIT_HEADER.append(Component.text(" (%s):".formatted(spigotPlugins.size())))); // Purpur
+---        //} // Purpur
+--+//        if (!spigotPlugins.isEmpty()) { // Purpur
+--+//            sender.sendMessage(BUKKIT_HEADER.append(Component.text(" (%s):".formatted(spigotPlugins.size())))); // Purpur
+--+//        } // Purpur
+--         
+---        for (Component component : formatProviders(spigotPlugins, sender)) { // Purpur
+--+//        for (Component component : formatProviders(spigotPlugins, sender)) { // Purpur
+--+//            sender.sendMessage(component);
+--+//        }
+--+
+--+        sender.sendMessage(PLUGINS_HEADER.append(Component.text(" (%s):".formatted(totalPlugins.size()))));
+--+
+--+        for(Component component : formatProviders(totalPlugins, sender)) {
+--             sender.sendMessage(component);
+--         }
+-- 
+--Index: Leaf-API/src/main/java/io/papermc/paper/ServerBuildInfo.java
+--IDEA additional info:
+--Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+--<+>UTF-8
+--===================================================================
+--diff --git a/Leaf-API/src/main/java/io/papermc/paper/ServerBuildInfo.java b/Leaf-API/src/main/java/io/papermc/paper/ServerBuildInfo.java
+----- a/Leaf-API/src/main/java/io/papermc/paper/ServerBuildInfo.java	(revision cd753026ff4a825a17fe94edd0b2c77a98533bd5)
+--+++ b/Leaf-API/src/main/java/io/papermc/paper/ServerBuildInfo.java	(date 1729262549164)
+--@@ -26,6 +26,13 @@
+--     Key BRAND_GALE_ID = Key.key("galemc", "gale");
+--     // Gale end - branding changes
+-- 
+--+    // Pepper start
+--+    /**
+--+     * The brand id for Pepper
+--+     */
+--+    Key BRAND_PEPPER_ID = Key.key("peppermc", "pepper");
+--+    // Pepper end
+--+
+--     // Purpur start
+--     /**
+--      * The brand id for Pufferfish.
+-Index: Leaf-Server/src/main/java/org/bukkit/craftbukkit/Main.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/Leaf-Server/src/main/java/org/bukkit/craftbukkit/Main.java b/Leaf-Server/src/main/java/org/bukkit/craftbukkit/Main.java
+---- a/Leaf-Server/src/main/java/org/bukkit/craftbukkit/Main.java	(revision c0245053445ae41f8d6040301777b9e51c16d504)
+-+++ b/Leaf-Server/src/main/java/org/bukkit/craftbukkit/Main.java	(date 1729429744088)
+-@@ -41,7 +41,7 @@
+-                 this.acceptsAll(Main.asList("c", "config"), "Properties file to use")
+-                         .withRequiredArg()
+-                         .ofType(File.class)
+--                        .defaultsTo(new File("server.properties"))
+-+                        .defaultsTo(new File("./config/server.properties"))
+-                         .describedAs("Properties file");
+- 
+-                 this.acceptsAll(Main.asList("P", "plugins"), "Plugin directory to use")
+-@@ -58,7 +58,7 @@
+-                 this.acceptsAll(Main.asList("W", "world-dir", "universe", "world-container"), "World container")
+-                         .withRequiredArg()
+-                         .ofType(File.class)
+--                        .defaultsTo(new File("."))
+-+                        .defaultsTo(new File("./Worlds"))
+-                         .describedAs("Directory containing worlds");
+- 
+-                 this.acceptsAll(Main.asList("w", "world", "level-name"), "World name")
+-@@ -124,7 +124,7 @@
+-                 this.acceptsAll(Main.asList("b", "bukkit-settings"), "File for bukkit settings")
+-                         .withRequiredArg()
+-                         .ofType(File.class)
+--                        .defaultsTo(new File("bukkit.yml"))
+-+                        .defaultsTo(new File("./config/bukkit.yml"))
+-                         .describedAs("Yml file");
+- 
+-                 this.acceptsAll(Main.asList("C", "commands-settings"), "File for command settings")
+-@@ -153,7 +153,7 @@
+-                 this.acceptsAll(Main.asList("S", "spigot-settings"), "File for spigot settings")
+-                         .withRequiredArg()
+-                         .ofType(File.class)
+--                        .defaultsTo(new File("spigot.yml"))
+-+                        .defaultsTo(new File("./config/spigot.yml"))
+-                         .describedAs("Yml file");
+-                 // Spigot End
+- 
+-@@ -180,7 +180,7 @@
+-                 acceptsAll(asList("purpur", "purpur-settings"), "File for purpur settings")
+-                     .withRequiredArg()
+-                     .ofType(File.class)
+--                    .defaultsTo(new File("purpur.yml"))
+-+                    .defaultsTo(new File("./config/purpur.yml"))
+-                     .describedAs("Yml file");
+-                 // Purpur end
+- 
